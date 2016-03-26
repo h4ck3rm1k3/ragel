@@ -80,7 +80,7 @@ lex
 	token ident
 		/( alpha | '_' ) ( alpha | digit | '_' )*/
 
-	token sint
+	token uint
 		/ digit+ /
 
 	token hex_number
@@ -104,10 +104,6 @@ lex
 			`++ `--
 end
 
-def uint
-	[sint `u]
-|	[sint]
-
 def embedded_host
 	[`$ string uint `{ host::tok* host::`}$]
 |	[`= string uint `{ host::tok* host::`}$]
@@ -128,8 +124,7 @@ def expr_factor
 |	[ident `[ expr `]]
 |	[`offset `( ident `, expr `)]
 |	[`deref `( ident `, expr `)]
-|	[uint]
-|	[`- uint]
+|	[number]
 |	[`TRUE]
 |	[`FALSE]
 |	[`nil]
@@ -195,9 +190,13 @@ def expr_assign
 def expr
 	[expr_assign]
 
-def number
+def sint
 	[uint]
 |	[`- uint]
+
+def number
+	[`u `( uint `)]
+|	[sint]
 
 def comma_num
 	[`, number]
